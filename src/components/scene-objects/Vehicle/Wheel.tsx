@@ -3,7 +3,7 @@ import {
   CompoundBodyProps,
   CylinderProps,
   useCompoundBody,
-  useCylinder
+  useCylinder,
 } from "use-cannon/packages/react-three-cannon/src";
 // } from "@react-three/cannon";
 import { useGLTF } from "@react-three/drei";
@@ -12,7 +12,7 @@ import {
   CUBE,
   PILLAR,
   SURFACE_FOR_PAINT,
-  WHEEL
+  WHEEL,
 } from "../ObjectCollisionTypes";
 import { forwardRef, Ref, useContext, useState } from "react";
 import { Euler, Vector3 } from "@react-three/fiber";
@@ -81,17 +81,17 @@ const Wheel = forwardRef(
       mass: 50,
       // type: "Kinematic",///////////////////////////////////////////////<<<<<<<<<<<<<<<<
       material: "wheel",
-      collisionFilterGroup: 0, // for debug - to ignore wheel and chassis buggy collision from incorrect calculation of wheel position <<<<<<<<< ////////////////////   *********
-      // collisionFilterGroup: WHEEL,
+      // collisionFilterGroup: 0, // for debug - to ignore wheel and chassis buggy collision from incorrect calculation of wheel position <<<<<<<<< ////////////////////   *********
+      collisionFilterGroup: WHEEL,
       collisionFilterMask: CHASSIS | WHEEL | SURFACE_FOR_PAINT | PILLAR | CUBE,
       shapes: [
         {
           type: "Cylinder",
           rotation: [0, 0, (leftSide ? +1 : -1) * halfMathPI],
-          args: [wheelPhysicsRadius, wheelPhysicsRadius, scaledWheelDepth, 16]
-        }
+          args: [wheelPhysicsRadius, wheelPhysicsRadius, scaledWheelDepth, 16],
+        },
       ],
-      ...props
+      ...props,
     };
 
     if (printCollisionInfo) {
@@ -106,18 +106,18 @@ const Wheel = forwardRef(
     const scale = [
       wheelMeshRadius,
       scaledWheelMeshDepth,
-      wheelMeshRadius
+      wheelMeshRadius,
     ] as Vector3;
     const position = [
       (leftSide ? +1 : -1) * scaledWheelMeshDepth,
       0,
-      0
+      0,
     ] as Vector3;
     const rotation = [0, 0, (leftSide ? +1 : -1) * halfMathPI] as Euler;
 
     const { showWireframe } = useContext(ControlsContext);
 
-// @ts-expect-error
+    // @ts-expect-error
     (nodes["wheel-all-terrain_1"] as Mesh).material.wireframe = showWireframe;
     // @ts-expect-error
     (nodes["wheel-all-terrain_2"] as Mesh).material.wireframe = showWireframe;
