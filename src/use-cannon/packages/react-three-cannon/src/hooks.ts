@@ -35,7 +35,7 @@ import type {
   TrimeshProps,
   Triplet,
   VectorName,
-  WheelInfoOptions
+  WheelInfoOptions,
 } from "use-cannon/packages/cannon-worker-api/src";
 // } from '@pmndrs/cannon-worker-api'
 import type { MaterialOptions } from "cannon-es";
@@ -48,7 +48,7 @@ import {
   MathUtils,
   Object3D,
   Quaternion,
-  Vector3
+  Vector3,
 } from "three";
 
 import { useDebugContext } from "./debug-context";
@@ -74,21 +74,20 @@ export type VectorApi = {
 
 export type WorkerApi = {
   [K in AtomicName]: AtomicApi<K>;
-} &
-  {
-    [K in VectorName]: VectorApi;
-  } & {
-    applyForce: (force: Triplet, worldPoint: Triplet) => void;
-    applyImpulse: (impulse: Triplet, worldPoint: Triplet) => void;
-    applyLocalForce: (force: Triplet, localPoint: Triplet) => void;
-    applyLocalImpulse: (impulse: Triplet, localPoint: Triplet) => void;
-    applyTorque: (torque: Triplet) => void;
-    quaternion: QuaternionApi;
-    rotation: VectorApi;
-    scaleOverride: (scale: Triplet) => void;
-    sleep: () => void;
-    wakeUp: () => void;
-  };
+} & {
+  [K in VectorName]: VectorApi;
+} & {
+  applyForce: (force: Triplet, worldPoint: Triplet) => void;
+  applyImpulse: (impulse: Triplet, worldPoint: Triplet) => void;
+  applyLocalForce: (force: Triplet, localPoint: Triplet) => void;
+  applyLocalImpulse: (impulse: Triplet, localPoint: Triplet) => void;
+  applyTorque: (torque: Triplet) => void;
+  quaternion: QuaternionApi;
+  rotation: VectorApi;
+  scaleOverride: (scale: Triplet) => void;
+  sleep: () => void;
+  wakeUp: () => void;
+};
 
 export interface PublicApi extends WorkerApi {
   at: (index: number) => WorkerApi;
@@ -160,7 +159,7 @@ function setupCollision(
   events[uuid] = {
     collide: onCollide,
     collideBegin: onCollideBegin,
-    collideEnd: onCollideEnd
+    collideEnd: onCollideEnd,
   };
 }
 
@@ -176,13 +175,8 @@ function useBody<B extends BodyProps<unknown[]>, O extends Object3D>(
 ): Api<O> {
   const ref = useForwardedRef(fwdRef);
 
-  const {
-    events,
-    refs,
-    scaleOverrides,
-    subscriptions,
-    worker
-  } = usePhysicsContext();
+  const { events, refs, scaleOverrides, subscriptions, worker } =
+    usePhysicsContext();
   const debugApi = useDebugContext();
 
   useLayoutEffect(() => {
@@ -235,7 +229,7 @@ function useBody<B extends BodyProps<unknown[]>, O extends Object3D>(
         }
       ),
       type,
-      uuid
+      uuid,
     });
     return () => {
       uuid.forEach((id) => {
@@ -249,6 +243,7 @@ function useBody<B extends BodyProps<unknown[]>, O extends Object3D>(
 
   const api = useMemo(() => {
     const makeAtomic = <T extends AtomicName>(type: T, index?: number) => {
+      // @ts-expect-error
       const op: SetOpName<T> = `set${capitalize(type)}`;
 
       return {
@@ -257,10 +252,10 @@ function useBody<B extends BodyProps<unknown[]>, O extends Object3D>(
           uuid &&
             worker[op]({
               props: value,
-              uuid
+              uuid,
             } as never);
         },
-        subscribe: subscribe(ref, worker, subscriptions, type, index)
+        subscribe: subscribe(ref, worker, subscriptions, type, index),
       };
     };
 
@@ -275,7 +270,7 @@ function useBody<B extends BodyProps<unknown[]>, O extends Object3D>(
           const uuid = getUUID(ref, index);
           uuid && worker.setQuaternion({ props: [x, y, z, w], uuid });
         },
-        subscribe: subscribe(ref, worker, subscriptions, type, index)
+        subscribe: subscribe(ref, worker, subscriptions, type, index),
       };
     };
 
@@ -301,11 +296,12 @@ function useBody<B extends BodyProps<unknown[]>, O extends Object3D>(
             delete subscriptions[id];
             worker.unsubscribe({ props: id });
           };
-        }
+        },
       };
     };
 
     const makeVec = (type: VectorName, index?: number) => {
+      // @ts-expect-error
       const op: SetOpName<VectorName> = `set${capitalize(type)}`;
       return {
         copy: ({ x, y, z }: Vector3 | Euler) => {
@@ -316,7 +312,7 @@ function useBody<B extends BodyProps<unknown[]>, O extends Object3D>(
           const uuid = getUUID(ref, index);
           uuid && worker[op]({ props: [x, y, z], uuid });
         },
-        subscribe: subscribe(ref, worker, subscriptions, type, index)
+        subscribe: subscribe(ref, worker, subscriptions, type, index),
       };
     };
 
@@ -374,14 +370,14 @@ function useBody<B extends BodyProps<unknown[]>, O extends Object3D>(
         wakeUp() {
           const uuid = getUUID(ref, index);
           uuid && worker.wakeUp({ uuid });
-        }
+        },
       };
     }
 
     const cache: { [index: number]: WorkerApi } = {};
     return {
       ...makeApi(undefined),
-      at: (index: number) => cache[index] || (cache[index] = makeApi(index))
+      at: (index: number) => cache[index] || (cache[index] = makeApi(index)),
     };
   }, []);
   return [ref, api];
@@ -471,13 +467,13 @@ export function useConvexPolyhedron<O extends Object3D>(
       faces,
       normals,
       axes,
-      boundingSphereRadius
+      boundingSphereRadius,
     ] = []): ConvexPolyhedronArgs<Triplet> => [
       vertices && vertices.map(makeTriplet),
       faces,
       normals && normals.map(makeTriplet),
       axes && axes.map(makeTriplet),
-      boundingSphereRadius
+      boundingSphereRadius,
     ],
     fwdRef,
     deps
@@ -551,7 +547,7 @@ function useConstraint<
       worker.addConstraint({
         props: [refA.current.uuid, refB.current.uuid, optns],
         type,
-        uuid
+        uuid,
       });
       return () => worker.removeConstraint({ uuid });
     }
@@ -560,7 +556,7 @@ function useConstraint<
   const api = useMemo(() => {
     const enableDisable = {
       disable: () => worker.disableConstraint({ uuid }),
-      enable: () => worker.enableConstraint({ uuid })
+      enable: () => worker.enableConstraint({ uuid }),
     };
 
     if (type === "Hinge") {
@@ -571,7 +567,7 @@ function useConstraint<
         setMotorMaxForce: (value: number) =>
           worker.setConstraintMotorMaxForce({ props: value, uuid }),
         setMotorSpeed: (value: number) =>
-          worker.setConstraintMotorSpeed({ props: value, uuid })
+          worker.setConstraintMotorSpeed({ props: value, uuid }),
       };
     }
 
@@ -641,7 +637,7 @@ export function useSpring<A extends Object3D, B extends Object3D>(
     if (refA.current && refB.current) {
       worker.addSpring({
         props: [refA.current.uuid, refB.current.uuid, optns],
-        uuid
+        uuid,
       });
       return () => {
         worker.removeSpring({ uuid });
@@ -656,7 +652,7 @@ export function useSpring<A extends Object3D, B extends Object3D>(
       setRestLength: (value: number) =>
         worker.setSpringRestLength({ props: value, uuid }),
       setStiffness: (value: number) =>
-        worker.setSpringStiffness({ props: value, uuid })
+        worker.setSpringStiffness({ props: value, uuid }),
     }),
     deps
   );
@@ -726,7 +722,7 @@ export interface RaycastVehicleProps {
   indexUpAxis?: number;
   wheelInfos: WheelInfoOptions[];
   wheels: Ref<Object3D>[];
-  worker: Worker;
+  // worker: Worker;
 }
 
 export function useRaycastVehicle<O extends Object3D>(
@@ -735,7 +731,7 @@ export function useRaycastVehicle<O extends Object3D>(
   deps: DependencyList = []
 ): [RefObject<O>, RaycastVehiclePublicApi] {
   const ref = useForwardedRef(fwdRef);
-  const { worker: passedWorker } = fn();/////////////////////////
+  // const { worker: passedWorker } = fn();/////////////////////////
   const { worker, subscriptions } = usePhysicsContext();
 
   useLayoutEffect(() => {
@@ -754,7 +750,7 @@ export function useRaycastVehicle<O extends Object3D>(
       indexRightAxis = 0,
       indexUpAxis = 1,
       wheelInfos,
-      wheels
+      wheels,
     } = fn();
 
     const chassisBodyUUID = getUUID(chassisBody);
@@ -769,9 +765,9 @@ export function useRaycastVehicle<O extends Object3D>(
         wheelInfos,
         indexForwardAxis,
         indexRightAxis,
-        indexUpAxis
+        indexUpAxis,
       ],
-      uuid
+      uuid,
     });
     return () => {
       currentWorker.removeRaycastVehicle({ uuid });
@@ -785,7 +781,7 @@ export function useRaycastVehicle<O extends Object3D>(
         uuid &&
           worker.applyRaycastVehicleEngineForce({
             props: [value, wheelIndex],
-            uuid
+            uuid,
           });
       },
       setBrake(brake: number, wheelIndex: number) {
@@ -798,7 +794,7 @@ export function useRaycastVehicle<O extends Object3D>(
         uuid &&
           worker.setRaycastVehicleSteeringValue({
             props: [value, wheelIndex],
-            uuid
+            uuid,
           });
       },
       sliding: {
@@ -809,8 +805,8 @@ export function useRaycastVehicle<O extends Object3D>(
           "sliding",
           undefined,
           "vehicles"
-        )
-      }
+        ),
+      },
     };
   }, deps);
   return [ref, api];
@@ -828,7 +824,7 @@ export function useContactMaterial(
   useEffect(() => {
     worker.addContactMaterial({
       props: [materialA, materialB, options],
-      uuid
+      uuid,
     });
     return () => {
       worker.removeContactMaterial({ uuid });

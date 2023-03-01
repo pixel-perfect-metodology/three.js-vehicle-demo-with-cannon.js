@@ -1,4 +1,7 @@
-import { PlaneProps, usePlane } from "use-cannon/packages/react-three-cannon/src";
+import {
+  PlaneProps,
+  usePlane,
+} from "use-cannon/packages/react-three-cannon/src";
 // import { PlaneProps, usePlane } from "@react-three/cannon";
 
 type PlaneSceneObjectProps = Partial<{
@@ -15,10 +18,11 @@ export default function PlaneSceneObject({
   const [ref] = usePlane(() => ({
     type: "Static",
     material: "ground",
-    ...props
+    ...props,
   }));
 
   return (
+    // @ts-expect-error
     <group ref={ref}>
       <mesh receiveShadow>
         <planeGeometry args={[width, height]} />

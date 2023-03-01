@@ -1,23 +1,29 @@
-import { Material } from 'cannon-es'
+import { Material } from "cannon-es";
 
 type MaterialOptions = {
-  friction?: number
-  name?: string | symbol
-  restitution?: number
-}
+  friction?: number;
+  name?: string | symbol;
+  restitution?: number;
+};
 
-export type CreateMaterial = (nameOrOptions?: MaterialOptions | string) => Material
+export type CreateMaterial = (
+  nameOrOptions?: MaterialOptions | string
+) => Material;
 
-let materialId = 0
+let materialId = 0;
 
 export const createMaterialFactory =
   (materials: Record<string | symbol, Material>): CreateMaterial =>
   (nameOrOptions = {}) => {
     const materialOptions =
-      typeof nameOrOptions === 'string'
+      typeof nameOrOptions === "string"
         ? { name: nameOrOptions }
-        : { name: Symbol.for(`Material${materialId++}`), ...nameOrOptions }
-    const { name } = materialOptions
-    materials[name] = materials[name] || new Material(materialOptions)
-    return materials[name]
-  }
+        : { name: Symbol.for(`Material${materialId++}`), ...nameOrOptions };
+    const { name } = materialOptions;
+
+    // @ts-expect-error
+    materials[name] = materials[name] || new Material(materialOptions);
+
+    // @ts-expect-error
+    return materials[name];
+  };

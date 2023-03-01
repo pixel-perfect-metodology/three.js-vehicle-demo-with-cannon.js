@@ -1,10 +1,13 @@
-import { Debug as CannonDebugger, Physics } from "use-cannon/packages/react-three-cannon/src";
+import {
+  Debug as CannonDebugger,
+  Physics,
+} from "use-cannon/packages/react-three-cannon/src";
 // import { Debug as CannonDebugger, Physics } from "@react-three/cannon";
 import {
   CameraControls,
   Environment,
   OrbitControls,
-  Stats
+  Stats,
 } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import PhysicsScene from "components/PhysicsScene";
@@ -17,14 +20,14 @@ import { Vector3 } from "three";
 export const DebuggerColorIdByName = {
   Black: 1 as const,
   White: 2 as const,
-  Green: 3 as const
+  Green: 3 as const,
 };
 
 export const DebuggerColorNamessById = [
   "Black" as const, // 0 index
   "Black" as const, // 1 index
   "White" as const, // 2 index
-  "Green" as const // 3 index
+  "Green" as const, // 3 index
 ];
 
 // type DebuggerColorsByNameValues = typeof DebuggerColorsByName[ColorKeys];
@@ -37,36 +40,36 @@ export const DebuggerColorNamessById = [
 const Colors = {
   Black: "#000000" as const,
   White: "#ffffff" as const,
-  Green: "#00ff00" as const
+  Green: "#00ff00" as const,
 };
 
 type ColorKeys = keyof typeof Colors;
-type ColorValues = typeof Colors[ColorKeys];
+type ColorValues = (typeof Colors)[ColorKeys];
 
 type SceneProps = {
   cameraControlsRef: RefObject<CameraControls>;
   cameraPosition: Vector3;
   cameraTarget: Vector3;
-  worker:Worker
+  worker: Worker;
 };
 
 const Scene = ({
   cameraControlsRef,
   cameraPosition = new Vector3(),
   cameraTarget = new Vector3(),
-  worker
+  worker,
 }: SceneProps) => {
   const controls = useContext(ControlsContext);
   const {
     isActiveCannonDebugger,
     cannonDebuggerColorIndex,
     showFPSStats,
-    showPerfomanceInfo
+    showPerfomanceInfo,
   } = controls;
 
   const [
     isActiveCurrentCannonDebuggerState,
-    setIsActiveCurrentCannonDebuggerState
+    setIsActiveCurrentCannonDebuggerState,
   ] = useState(false);
   const [cannonDebuggerColor, setCannonDebuggerColor] = useState<ColorValues>(
     Colors[DebuggerColorNamessById[cannonDebuggerColorIndex]]
@@ -142,6 +145,7 @@ const Scene = ({
 
       <Physics
         broadphase="SAP"
+        // @ts-expect-error
         contactEquationRelaxation={4}
         friction={1e-3}
         allowSleep
@@ -149,7 +153,8 @@ const Scene = ({
       >
         {isActiveCurrentCannonDebuggerState && (
           <CannonDebugger color={cannonDebuggerColor}>
-            <PhysicsScene worker={worker}/>
+            <PhysicsScene />
+            {/* <PhysicsScene worker={worker} /> */}
           </CannonDebugger>
         )}
         {!isActiveCurrentCannonDebuggerState && <PhysicsScene />}
