@@ -4,9 +4,20 @@ import Pillar from "components/scene-objects/Pillar";
 import SurfaceForPaint from "components/scene-objects/SurfaceForPaint";
 import Vehicle from "components/scene-objects/Vehicle";
 import Cube from "components/scene-objects/Cube";
+import { Mesh } from "three";
+import { BufferGeometry } from "three";
+import { Material } from "three";
 
-const PhysicsScene = ({worker}) => {
-  const cubeRef = useRef<Object3D<Event>>(null);
+const PhysicsScene = () => {
+  // const PhysicsScene = ({worker}) => {
+  const cubeRef = useRef<Mesh<BufferGeometry, Material | Material[]>>(null);
+  // const cubeRef = useRef<
+  //   | Mesh<BufferGeometry, Material | Material[]>
+  //   // | ((instance: Mesh<BufferGeometry, Material | Material[]> | null) => void)
+  //   | null
+  //   // | undefined
+  // >(null);
+  // const cubeRef = useRef<Object3D<Event>>(null);
 
   return (
     <>
@@ -41,7 +52,8 @@ const PhysicsScene = ({worker}) => {
       <Cube ref={cubeRef} position={[5, 0, 0]} args={[1, 2, 1]} />
 
       {/* <Vehicle rotation={[0, -Math.PI / 4, 0]} angularVelocity={[0, 0.5, 0]} /> */}
-      <Vehicle worker={worker} rotation={[0, -Math.PI / 4, 0]} position={[0, 2, 0]} />
+      <Vehicle rotation={[0, -Math.PI / 4, 0]} position={[0, 2, 0]} />
+      {/* <Vehicle worker={worker} rotation={[0, -Math.PI / 4, 0]} position={[0, 2, 0]} /> */}
 
       {/* debug vehicle wheels */}
       {/* <Cube type='Static' ref={cubeRef} position={[0, 0, 0]} args={[1, 2, 1]} /> */}

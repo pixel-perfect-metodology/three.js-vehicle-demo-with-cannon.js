@@ -3,7 +3,7 @@
 import {
   useRaycastVehicle,
   Triplet,
-  WheelInfoOptions
+  WheelInfoOptions,
 } from "use-cannon/packages/react-three-cannon/src";
 // original version of useRaycastVehicle
 // import { useRaycastVehicle} from "@react-three/cannon";
@@ -35,7 +35,7 @@ const Vehicle = ({
   velocity = [0, 0, 0] as Triplet,
   angularVelocity = [0, 0, 0] as Triplet,
   rotation = [0, 0, 0] as Triplet,
-  worker,
+  // worker,
   ...props
 }) => {
   const distanceToRotationCenter = frontFirstAxis * Math.tan(maxSteerAxisesRad);
@@ -86,7 +86,7 @@ const Vehicle = ({
     customSlidingRotationalSpeed: 6,
     // customSlidingRotationalSpeed: 2,
     // customSlidingRotationalSpeed: 30,
-    frictionSlip: 1
+    frictionSlip: 1,
     // frictionSlip: .01
     // frictionSlip: 2
   };
@@ -98,8 +98,8 @@ const Vehicle = ({
     chassisConnectionPointLocal: [
       -wheelAxisWidth / 2,
       wheelAxisHeight,
-      frontFirstAxis
-    ]
+      frontFirstAxis,
+    ],
   };
   const wheelFrontFirstAxisRightInfo: WheelInfoOptions = {
     ...wheelInfo,
@@ -107,8 +107,8 @@ const Vehicle = ({
     chassisConnectionPointLocal: [
       +wheelAxisWidth / 2,
       wheelAxisHeight,
-      frontFirstAxis
-    ]
+      frontFirstAxis,
+    ],
   };
   const wheelFrontSecondAxisLeftInfo: WheelInfoOptions = {
     ...wheelInfo,
@@ -116,8 +116,8 @@ const Vehicle = ({
     chassisConnectionPointLocal: [
       -wheelAxisWidth / 2,
       wheelAxisHeight,
-      frontSecondAxis
-    ]
+      frontSecondAxis,
+    ],
   };
   const wheelFrontSecondAxisRightInfo: WheelInfoOptions = {
     ...wheelInfo,
@@ -125,8 +125,8 @@ const Vehicle = ({
     chassisConnectionPointLocal: [
       +wheelAxisWidth / 2,
       wheelAxisHeight,
-      frontSecondAxis
-    ]
+      frontSecondAxis,
+    ],
   };
   //// rear axises
   const wheelRearFirstAxisLeftInfo: WheelInfoOptions = {
@@ -135,8 +135,8 @@ const Vehicle = ({
     chassisConnectionPointLocal: [
       -wheelAxisWidth / 2,
       wheelAxisHeight,
-      rearFirstAxis
-    ]
+      rearFirstAxis,
+    ],
   };
   const wheelRearFirstAxisRightInfo: WheelInfoOptions = {
     ...wheelInfo,
@@ -144,8 +144,8 @@ const Vehicle = ({
     chassisConnectionPointLocal: [
       +wheelAxisWidth / 2,
       wheelAxisHeight,
-      rearFirstAxis
-    ]
+      rearFirstAxis,
+    ],
   };
   const wheelRearSecondAxisLeftInfo: WheelInfoOptions = {
     ...wheelInfo,
@@ -153,8 +153,8 @@ const Vehicle = ({
     chassisConnectionPointLocal: [
       -wheelAxisWidth / 2,
       wheelAxisHeight,
-      rearSecondAxis
-    ]
+      rearSecondAxis,
+    ],
   };
   const wheelRearSecondAxisRightInfo: WheelInfoOptions = {
     ...wheelInfo,
@@ -162,8 +162,8 @@ const Vehicle = ({
     chassisConnectionPointLocal: [
       +wheelAxisWidth / 2,
       wheelAxisHeight,
-      rearSecondAxis
-    ]
+      rearSecondAxis,
+    ],
   };
 
   const raycastVehicleParams = {
@@ -177,7 +177,7 @@ const Vehicle = ({
       wheelRearFirstAxisLeftRef,
       wheelRearFirstAxisRightRef,
       wheelRearSecondAxisLeftRef,
-      wheelRearSecondAxisRightRef
+      wheelRearSecondAxisRightRef,
     ],
     wheelInfos: [
       wheelFrontFirstAxisLeftInfo,
@@ -188,22 +188,27 @@ const Vehicle = ({
       wheelRearFirstAxisLeftInfo,
       wheelRearFirstAxisRightInfo,
       wheelRearSecondAxisLeftInfo,
-      wheelRearSecondAxisRightInfo
+      wheelRearSecondAxisRightInfo,
     ],
 
     // indexForwardAxis: 2,
     // indexRightAxis: 0,
     // indexUpAxis: 1
 
-    worker,
+    // worker,
   };
   const [vehicle, api] = useRaycastVehicle(() => raycastVehicleParams);
 
   // for debug ---------------------------------------
+  // @ts-expect-error
   window.vehicle = vehicle;
+  // @ts-expect-error
   window.vehicleApi = api;
+  // @ts-expect-error
   window.vehiclewheelRefs = raycastVehicleParams.wheels;
+  // @ts-expect-error
   window.vehiclewheelInfos = raycastVehicleParams.wheelInfos;
+  // @ts-expect-error
   window.Vector3 = Vector3;
   // /for debug --------------------------------------
 
@@ -223,7 +228,7 @@ const Vehicle = ({
       left,
       right,
       brake,
-      reset
+      reset,
       // } = controls.current.playerUnit;
     } = controls.playerUnit;
     // const { forward, backward, left, right, brake, reset } = controls.current;
@@ -297,9 +302,13 @@ const Vehicle = ({
 
     if (reset) {
       if (chassisRef && chassisRef.current) {
+        // @ts-expect-error
         chassisRef.current.api.position.set(...position);
+        // @ts-expect-error
         chassisRef.current.api.velocity.set(...velocity);
+        // @ts-expect-error
         chassisRef.current.api.angularVelocity.set(...angularVelocity);
+        // @ts-expect-error
         chassisRef.current.api.rotation.set(...rotation);
       }
     }
@@ -315,6 +324,7 @@ const Vehicle = ({
   };
 
   return (
+    // @ts-expect-error
     <group ref={vehicle} name="vehicle">
       <Chassis
         ref={chassisRef}

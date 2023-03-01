@@ -1,6 +1,11 @@
 import { createContext, useEffect, useRef } from "react";
 import { useImmer } from "use-immer";
 
+declare var window: {
+  addEventListener: any;
+  removeEventListener: any;
+};
+
 export function useKeyHold(
   targetKeys: string[],
   onEventHandlerSetValue = (value: boolean) => {}
@@ -10,9 +15,11 @@ export function useKeyHold(
       throw new Error("onEventHandlerSetValue must be a function");
     }
 
+    // @ts-expect-error
     const downHandler = ({ key }: KeyboardEvent) =>
       void (targetKeys.indexOf(key) !== -1 && onEventHandlerSetValue(true));
 
+    // @ts-expect-error
     const upHandler = ({ key }: KeyboardEvent) =>
       void (targetKeys.indexOf(key) !== -1 && onEventHandlerSetValue(false));
 
@@ -38,6 +45,7 @@ export function useKeyHold(
 
 export function useKeyToggle(targetKeys: string[], onEventHandler: Function) {
   useEffect(() => {
+    // @ts-expect-error
     const upHandler = ({ key }: KeyboardEvent) =>
       void (targetKeys.indexOf(key) !== -1 && onEventHandler());
 
@@ -66,7 +74,7 @@ export function useControlsRef() {
     left: false,
     right: false,
     brake: false,
-    reset: false
+    reset: false,
   });
 
   useKeyHold(["ArrowUp", "w"], (pressed) => (keys.current.forward = pressed));
@@ -94,7 +102,7 @@ export function useHotkeysRef() {
     showPerfomanceInfo: true,
 
     showExtendedKeymapInfo: false,
-    showCameraInfo: false
+    showCameraInfo: false,
   });
 
   useKeyToggle(
@@ -119,8 +127,8 @@ export function useHotkeysRef() {
   useKeyToggle(
     ["h"],
     () =>
-      (keys.current.showExtendedKeymapInfo = !keys.current
-        .showExtendedKeymapInfo)
+      (keys.current.showExtendedKeymapInfo =
+        !keys.current.showExtendedKeymapInfo)
   );
 
   useKeyToggle(
@@ -138,7 +146,7 @@ export const initialControlsState = {
     left: false,
     right: false,
     brake: false,
-    reset: false
+    reset: false,
   },
 
   showWireframe: true, // for debug time
@@ -151,7 +159,7 @@ export const initialControlsState = {
   showPerfomanceInfo: true,
 
   showExtendedKeymapInfo: false,
-  showCameraInfo: false
+  showCameraInfo: false,
 };
 
 export type Controls = typeof initialControlsState;
@@ -202,7 +210,8 @@ export function useControls() {
   useKeysStateToggleHandler(
     ["c"],
     (draftKeys) =>
-      void (draftKeys.isActiveCannonDebugger = !draftKeys.isActiveCannonDebugger)
+      void (draftKeys.isActiveCannonDebugger =
+        !draftKeys.isActiveCannonDebugger)
   );
 
   useKeysStateToggleHandler(
@@ -232,7 +241,8 @@ export function useControls() {
   useKeysStateToggleHandler(
     ["h"],
     (draftKeys) =>
-      void (draftKeys.showExtendedKeymapInfo = !draftKeys.showExtendedKeymapInfo)
+      void (draftKeys.showExtendedKeymapInfo =
+        !draftKeys.showExtendedKeymapInfo)
   );
 
   useKeysStateToggleHandler(

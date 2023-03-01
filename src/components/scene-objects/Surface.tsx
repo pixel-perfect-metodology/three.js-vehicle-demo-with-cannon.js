@@ -1,4 +1,8 @@
-import { BoxProps, Triplet, useBox } from "use-cannon/packages/react-three-cannon/src";
+import {
+  BoxProps,
+  Triplet,
+  useBox,
+} from "use-cannon/packages/react-three-cannon/src";
 // import { BoxProps, Triplet, useBox } from "@react-three/cannon";
 
 type SurfaceSceneObjectProps = BoxProps &
@@ -22,16 +26,17 @@ export default function SurfaceSceneObject({
     type: "Static",
     material: "ground",
     args: [width, height, depth],
-    ...props
+    ...props,
   }));
 
   return (
+    // @ts-expect-error
     <mesh ref={ref} receiveShadow>
       <boxGeometry args={[width, height, depth]} />
       {/* //todo replace boxGeometry on planeGeometry */}
       {/* <planeGeometry args={[10, 10]} /> */}
       <meshStandardMaterial color="#303030" />
-      <meshBasicMaterial map={null}/>
+      <meshBasicMaterial map={null} />
     </mesh>
   );
 }

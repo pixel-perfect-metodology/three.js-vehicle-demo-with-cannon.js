@@ -1,0 +1,30 @@
+{
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "dom": true
+  },
+  "extends": ["eslint:recommended"],
+  "overrides": [
+    {
+      "extends": "plugin:@typescript-eslint/recommended",
+      "files": ["*.ts"],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "project": ["tsconfig.json"]
+      },
+      "plugins": ["@typescript-eslint"]
+    }
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "sourceType": "module",
+    "project": ["tsconfig.json"]
+  },
+  "rules": {
+    "no-unused-vars": ["warn"],
+    "no-undef": ["warn"]
+  }
+}

@@ -3,7 +3,7 @@ import {
   CollideEvent,
   CompoundBodyProps,
   Triplet,
-  useCompoundBody
+  useCompoundBody,
 } from "use-cannon/packages/react-three-cannon/src";
 // } from "@react-three/cannon";
 import { ThreeEvent, useFrame } from "@react-three/fiber";
@@ -12,14 +12,14 @@ import {
   CUBE,
   PILLAR,
   SURFACE_FOR_PAINT,
-  WHEEL
+  WHEEL,
 } from "./ObjectCollisionTypes";
 import {
   RefObject,
   useCallback,
   useLayoutEffect,
   useRef,
-  useState
+  useState,
 } from "react";
 import {
   ArrowHelper,
@@ -32,7 +32,7 @@ import {
   Object3D,
   SphereGeometry,
   Vector2,
-  Vector3
+  Vector3,
 } from "three";
 
 const SURFACE_ROOT_OBJECT_NAME = `surface-for-paint`;
@@ -98,11 +98,11 @@ export default function SurfaceForPaint({
         args: [
           width + OVERLAP_FOR_TEXTURES_SEAMLESS,
           height,
-          depth + OVERLAP_FOR_TEXTURES_SEAMLESS
-        ]
-      }
+          depth + OVERLAP_FOR_TEXTURES_SEAMLESS,
+        ],
+      },
     ],
-    ...props
+    ...props,
   };
 
   if (printCollisionInfo) {
@@ -112,6 +112,7 @@ export default function SurfaceForPaint({
   const ref = useRef<Object3D<Event>>(null);
   useCompoundBody(() => surfaceCompoundBodyOptions, ref);
 
+// @ts-expect-error
   const canvasRef = useRef(document.createElement("canvas"));
   const textureRef = useRef<CanvasTexture>(null);
 
@@ -229,7 +230,7 @@ export default function SurfaceForPaint({
     removeObjectHelpersFromScene([
       HELPER_BOX_NAME,
       HELPER_SPHERE_NAME,
-      HELPER_ARROW_NAME
+      HELPER_ARROW_NAME,
     ]);
 
     const addBoxHelper = (position: Vector3, direction: Vector3) => {
@@ -283,10 +284,10 @@ export default function SurfaceForPaint({
     const previousRaycasterParameters = {
       ray: {
         origin: raycaster.ray.origin,
-        direction: raycaster.ray.direction
+        direction: raycaster.ray.direction,
       },
       near: raycaster.near,
-      far: raycaster.far
+      far: raycaster.far,
       // mode: raycaster.mode,
     };
     // /save previous raycaster parameters
@@ -354,7 +355,7 @@ export default function SurfaceForPaint({
       ) {
         const intersectionName = `wheel: ${wheelOne.name} surface: ${intersection.object.name}`;
         const userData = {
-          intersectionName
+          intersectionName,
         };
 
         if (showDebugHelpers || showSphereToIntersectionPoint) {
@@ -376,7 +377,9 @@ export default function SurfaceForPaint({
     paintTrailInIntersectionPoint(closestIntersection); // TODO enable to draw trails by wheels
 
     // for debug only
+    // @ts-expect-error
     window.closestIntersection = closestIntersection;
+    // @ts-expect-error
     window.intersections = intersections;
     // /for debug only
 
@@ -421,6 +424,7 @@ export default function SurfaceForPaint({
 
   return (
     <group
+    // @ts-expect-error
       ref={ref}
       name={SURFACE_ROOT_OBJECT_NAME}
       sector={sectorCoordinates}

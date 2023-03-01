@@ -8,7 +8,7 @@
  * createBinaryString(-1123456) //-> "11111111111011101101101110000000"
  * createBinaryString(0x7fffffff) //-> "01111111111111111111111111111111"
  */
-function convertIntegerToBinaryString(nMask: number) {
+export function convertIntegerToBinaryString(nMask: number) {
   let sMask = "";
   let nShifted = nMask;
 
@@ -22,5 +22,6 @@ function convertIntegerToBinaryString(nMask: number) {
 }
 
 // for debug collisionFilterGroup
+// @ts-expect-error
 window.createBinaryString = convertIntegerToBinaryString;
 // /for debug collisionFilterGroup

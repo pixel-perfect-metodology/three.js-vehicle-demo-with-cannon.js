@@ -1,11 +1,14 @@
-import { CylinderProps, useCylinder } from "use-cannon/packages/react-three-cannon/src";
+import {
+  CylinderProps,
+  useCylinder,
+} from "use-cannon/packages/react-three-cannon/src";
 // import { CylinderProps, useCylinder } from "@react-three/cannon";
 import {
   CHASSIS,
   CUBE,
   PILLAR,
   SURFACE_FOR_PAINT,
-  WHEEL
+  WHEEL,
 } from "./ObjectCollisionTypes";
 import { Mesh, BufferGeometry, Material } from "three";
 
@@ -21,7 +24,7 @@ export default function Pillar({
       collisionFilterGroup: PILLAR,
       collisionFilterMask: CHASSIS | WHEEL | SURFACE_FOR_PAINT | PILLAR | CUBE,
       args,
-      ...props
+      ...props,
     })
   );
   return (

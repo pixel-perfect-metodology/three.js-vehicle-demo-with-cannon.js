@@ -10,7 +10,7 @@ import {
   Quaternion,
   Sphere,
   Trimesh,
-  Vec3
+  Vec3,
 } from "cannon-es";
 import type { MaterialOptions } from "cannon-es";
 
@@ -18,6 +18,7 @@ import { BodyProps, BodyShapeType, CompoundBodyProps, ShapeType } from "./body";
 import type { Triplet } from "./types";
 
 export class Body extends CannonBody {
+  // @ts-expect-error
   uuid: string;
 }
 
@@ -27,19 +28,24 @@ const prepareSphere = (args: number | number[]) =>
   Array.isArray(args) ? args : [args];
 
 const prepareConvexPolyhedron = ([
+  // @ts-expect-error
   v,
+  // @ts-expect-error
   faces,
+  // @ts-expect-error
   n,
+  // @ts-expect-error
   a,
-  boundingSphereRadius
+  // @ts-expect-error
+  boundingSphereRadius,
 ]): ConvexPolyhedronProps => [
   {
     axes: a ? a.map(makeVec3) : undefined,
     boundingSphereRadius,
     faces,
     normals: n ? n.map(makeVec3) : undefined,
-    vertices: v ? v.map(makeVec3) : undefined
-  }
+    vertices: v ? v.map(makeVec3) : undefined,
+  },
 ];
 
 type BoxProps = ConstructorParameters<typeof Box>;
@@ -88,7 +94,7 @@ export const propsToBody = (options: PropsToBody): Body => {
     type,
     createMaterial = (
       materialOptions: string | { friction?: number; restitution?: number }
-    ) => new Material(materialOptions)
+    ) => new Material(materialOptions),
   } = options;
 
   const {
@@ -104,7 +110,7 @@ export const propsToBody = (options: PropsToBody): Body => {
     rotation = [0, 0, 0],
     shapes,
     velocity = [0, 0, 0],
-    quaternion,
+    quaternion = [0, 0, 0, 0],
     ...extra
   } = props;
 
@@ -114,8 +120,9 @@ export const propsToBody = (options: PropsToBody): Body => {
     ...extra,
     mass: bodyType === "Static" ? 0 : mass,
     material: material ? createMaterial(material) : undefined,
+    // @ts-expect-error
     type: bodyType ? Body[bodyType.toUpperCase()] : undefined,
-    quaternion: new Quaternion(...quaternion)
+    quaternion: new Quaternion(...quaternion),
   });
   body.uuid = uuid;
 
@@ -125,14 +132,8 @@ export const propsToBody = (options: PropsToBody): Body => {
 
   if (type === "Compound") {
     shapes.forEach((shape) => {
-      const {
-        type,
-        args,
-        position,
-        rotation,
-        material,
-        ...extra
-      }: BodyProps = (shape as unknown) as BodyProps;
+      const { type, args, position, rotation, material, ...extra }: BodyProps =
+        shape as unknown as BodyProps;
 
       const shapeBody = body.addShape(
         createShape(type as ShapeType, args),

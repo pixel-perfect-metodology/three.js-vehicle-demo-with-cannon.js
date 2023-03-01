@@ -65,6 +65,7 @@ const Chassis = forwardRef(
       chassisBoxOptions.onCollide = onCollideHandler;
     }
 
+// @ts-expect-error
     const [_boxRef, api] = useBox<Mesh>(() => chassisBoxOptions, ref);
 
     const steelMaterial = materials["Paint.Gray"];
@@ -72,7 +73,9 @@ const Chassis = forwardRef(
 
     const { showWireframe } = useContext(ControlsContext);
 
+// @ts-expect-error
     (nodes.Cube002 as Mesh).material.wireframe = showWireframe;
+    // @ts-expect-error
     (nodes.Cube002_1 as Mesh).material.wireframe = showWireframe;
 
     const { position } = props;
@@ -82,6 +85,7 @@ const Chassis = forwardRef(
     Command: npx gltfjsx@6.1.4 chassis.glb --transform
     */
     return (
+      // @ts-expect-error
       <mesh ref={ref} api={api} name="chassis">
         <axesHelper
           name="chassis-helper"
@@ -96,6 +100,7 @@ const Chassis = forwardRef(
             name="chassis-metallic-parts"
             castShadow
             receiveShadow
+            // @ts-expect-error
             geometry={nodes.Cube002.geometry}
             material={steelMaterial}
           />
@@ -103,6 +108,7 @@ const Chassis = forwardRef(
             name="chassis-plastic-parts"
             castShadow
             receiveShadow
+            // @ts-expect-error
             geometry={nodes.Cube002_1.geometry}
             material={windowMaterial}
           />
