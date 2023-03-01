@@ -1,6 +1,4 @@
 import EventEmitter from "events";
-// import Worker from "./worker/index.ts";
-// import Worker from "web-worker:./worker/index.ts";
 
 import type {
   Broadphase,
@@ -10,12 +8,11 @@ import type {
   IncomingWorkerMessage,
   StepProps,
   Triplet,
-  WorldProps
+  WorldProps,
 } from "./types";
 
 export type CannonWorkerProps = Partial<WorldProps> & {
   size?: number;
-  passedWorker: Worker;
 };
 
 export class CannonWorkerAPI extends EventEmitter {
@@ -81,8 +78,6 @@ export class CannonWorkerAPI extends EventEmitter {
   private messageQueue: CannonMessage[] = [];
   private worker: CannonWebWorker | null = null;
 
-  public passedWorker: Worker;
-
   constructor({
     allowSleep = false,
     axisIndex = 0,
@@ -96,7 +91,6 @@ export class CannonWorkerAPI extends EventEmitter {
     size = 1000,
     solver = "GS",
     tolerance = 0.001,
-    passedWorker
   }: CannonWorkerProps) {
     super();
 
@@ -113,15 +107,12 @@ export class CannonWorkerAPI extends EventEmitter {
       size,
       solver,
       tolerance,
-      passedWorker
     };
 
     this.buffers = {
       positions: new Float32Array(size * 3),
-      quaternions: new Float32Array(size * 4)
+      quaternions: new Float32Array(size * 4),
     };
-
-    this.passedWorker = passedWorker;
   }
 
   addBodies({ props, type, uuid }: CannonMessageBody<"addBodies">): void {
@@ -129,31 +120,31 @@ export class CannonWorkerAPI extends EventEmitter {
       op: "addBodies",
       props,
       type,
-      uuid
+      uuid,
     });
   }
 
   addConstraint({
     props: [refA, refB, optns],
     type,
-    uuid
+    uuid,
   }: CannonMessageBody<"addConstraint">): void {
     this.postMessage({
       op: "addConstraint",
       props: [refA, refB, optns],
       type,
-      uuid
+      uuid,
     });
   }
 
   addContactMaterial({
     props,
-    uuid
+    uuid,
   }: CannonMessageBody<"addContactMaterial">): void {
     this.postMessage({
       op: "addContactMaterial",
       props,
-      uuid
+      uuid,
     });
   }
 
@@ -168,9 +159,9 @@ export class CannonWorkerAPI extends EventEmitter {
       wheelInfos,
       indexForwardAxis,
       indexRightAxis,
-      indexUpAxis
+      indexUpAxis,
     ],
-    uuid
+    uuid,
   }: CannonMessageBody<"addRaycastVehicle">): void {
     this.postMessage({
       op: "addRaycastVehicle",
@@ -180,20 +171,20 @@ export class CannonWorkerAPI extends EventEmitter {
         wheelInfos,
         indexForwardAxis,
         indexRightAxis,
-        indexUpAxis
+        indexUpAxis,
       ],
-      uuid
+      uuid,
     });
   }
 
   addSpring({
     props: [refA, refB, optns],
-    uuid
+    uuid,
   }: CannonMessageBody<"addSpring">): void {
     this.postMessage({
       op: "addSpring",
       props: [refA, refB, optns],
-      uuid
+      uuid,
     });
   }
 
@@ -211,19 +202,19 @@ export class CannonWorkerAPI extends EventEmitter {
 
   applyLocalImpulse({
     props,
-    uuid
+    uuid,
   }: CannonMessageBody<"applyLocalImpulse">): void {
     this.postMessage({ op: "applyLocalImpulse", props, uuid });
   }
 
   applyRaycastVehicleEngineForce({
     props,
-    uuid
+    uuid,
   }: CannonMessageBody<"applyRaycastVehicleEngineForce">): void {
     this.postMessage({
       op: "applyRaycastVehicleEngineForce",
       props,
-      uuid
+      uuid,
     });
   }
 
@@ -232,22 +223,9 @@ export class CannonWorkerAPI extends EventEmitter {
   }
 
   connect(): void {
-    // const getData: Worker = useMemo(
-    //   () => new Worker(new URL('./worker/index.ts', import.meta.url)),
-    //   []
-    // );
-
-    if (true) {
-      // if (this.passedWorker) {
-      this.worker = this.passedWorker as CannonWebWorker;
-    } else {
-      // this.worker = new Worker(
-      //   //   // new URL("./worker/index.ts")
-      //   new URL("./worker/index.ts", import.meta.url)
-      // ) as CannonWebWorker;
-      // // // original version
-      // // this.worker = new Worker() as CannonWebWorker
-    }
+    this.worker = new Worker(
+      new URL("./worker/index.ts", import.meta.url)
+    ) as CannonWebWorker;
 
     this.worker.onmessage = (message: IncomingWorkerMessage) => {
       if (message.data.op === "frame") {
@@ -272,7 +250,7 @@ export class CannonWorkerAPI extends EventEmitter {
   }
 
   disableConstraintMotor({
-    uuid
+    uuid,
   }: CannonMessageBody<"disableConstraintMotor">): void {
     this.postMessage({ op: "disableConstraintMotor", uuid });
   }
@@ -286,7 +264,7 @@ export class CannonWorkerAPI extends EventEmitter {
   }
 
   enableConstraintMotor({
-    uuid
+    uuid,
   }: CannonMessageBody<"enableConstraintMotor">): void {
     this.postMessage({ op: "enableConstraintMotor", uuid });
   }
@@ -303,7 +281,7 @@ export class CannonWorkerAPI extends EventEmitter {
       quatNormalizeFast,
       quatNormalizeSkip,
       solver,
-      tolerance
+      tolerance,
     } = this.config;
 
     this.postMessage({
@@ -319,8 +297,8 @@ export class CannonWorkerAPI extends EventEmitter {
         quatNormalizeFast,
         quatNormalizeSkip,
         solver,
-        tolerance
-      }
+        tolerance,
+      },
     });
   }
 
@@ -333,11 +311,11 @@ export class CannonWorkerAPI extends EventEmitter {
   }
 
   removeContactMaterial({
-    uuid
+    uuid,
   }: CannonMessageBody<"removeContactMaterial">): void {
     this.postMessage({
       op: "removeContactMaterial",
-      uuid
+      uuid,
     });
   }
 
@@ -346,7 +324,7 @@ export class CannonWorkerAPI extends EventEmitter {
   }
 
   removeRaycastVehicle({
-    uuid
+    uuid,
   }: CannonMessageBody<"removeRaycastVehicle">): void {
     this.postMessage({ op: "removeRaycastVehicle", uuid });
   }
@@ -361,63 +339,63 @@ export class CannonWorkerAPI extends EventEmitter {
 
   setAngularDamping({
     props,
-    uuid
+    uuid,
   }: CannonMessageBody<"setAngularDamping">): void {
     this.postMessage({ op: "setAngularDamping", props, uuid });
   }
 
   setAngularFactor({
     props,
-    uuid
+    uuid,
   }: CannonMessageBody<"setAngularFactor">): void {
     this.postMessage({ op: "setAngularFactor", props, uuid });
   }
 
   setAngularVelocity({
     props,
-    uuid
+    uuid,
   }: CannonMessageBody<"setAngularVelocity">): void {
     this.postMessage({ op: "setAngularVelocity", props, uuid });
   }
 
   setCollisionFilterGroup({
     props,
-    uuid
+    uuid,
   }: CannonMessageBody<"setCollisionFilterGroup">): void {
     this.postMessage({ op: "setCollisionFilterGroup", props, uuid });
   }
 
   setCollisionFilterMask({
     props,
-    uuid
+    uuid,
   }: CannonMessageBody<"setCollisionFilterMask">): void {
     this.postMessage({ op: "setCollisionFilterMask", props, uuid });
   }
 
   setCollisionResponse({
     props,
-    uuid
+    uuid,
   }: CannonMessageBody<"setCollisionResponse">): void {
     this.postMessage({ op: "setCollisionResponse", props, uuid });
   }
 
   setConstraintMotorMaxForce({
     props,
-    uuid
+    uuid,
   }: CannonMessageBody<"setConstraintMotorMaxForce">): void {
     this.postMessage({ op: "setConstraintMotorMaxForce", props, uuid });
   }
 
   setConstraintMotorSpeed({
     props,
-    uuid
+    uuid,
   }: CannonMessageBody<"setConstraintMotorSpeed">): void {
     this.postMessage({ op: "setConstraintMotorSpeed", props, uuid });
   }
 
   setFixedRotation({
     props,
-    uuid
+    uuid,
   }: CannonMessageBody<"setFixedRotation">): void {
     this.postMessage({ op: "setFixedRotation", props, uuid });
   }
@@ -428,7 +406,7 @@ export class CannonWorkerAPI extends EventEmitter {
 
   setLinearDamping({
     props,
-    uuid
+    uuid,
   }: CannonMessageBody<"setLinearDamping">): void {
     this.postMessage({ op: "setLinearDamping", props, uuid });
   }
@@ -451,26 +429,26 @@ export class CannonWorkerAPI extends EventEmitter {
 
   setQuaternion({
     props: [x, y, z, w],
-    uuid
+    uuid,
   }: CannonMessageBody<"setQuaternion">): void {
     this.postMessage({ op: "setQuaternion", props: [x, y, z, w], uuid });
   }
 
   setRaycastVehicleBrake({
     props,
-    uuid
+    uuid,
   }: CannonMessageBody<"setRaycastVehicleBrake">): void {
     this.postMessage({ op: "setRaycastVehicleBrake", props, uuid });
   }
 
   setRaycastVehicleSteeringValue({
     props,
-    uuid
+    uuid,
   }: CannonMessageBody<"setRaycastVehicleSteeringValue">): void {
     this.postMessage({
       op: "setRaycastVehicleSteeringValue",
       props,
-      uuid
+      uuid,
     });
   }
 
@@ -480,35 +458,35 @@ export class CannonWorkerAPI extends EventEmitter {
 
   setSleepSpeedLimit({
     props,
-    uuid
+    uuid,
   }: CannonMessageBody<"setSleepSpeedLimit">): void {
     this.postMessage({ op: "setSleepSpeedLimit", props, uuid });
   }
 
   setSleepTimeLimit({
     props,
-    uuid
+    uuid,
   }: CannonMessageBody<"setSleepTimeLimit">): void {
     this.postMessage({ op: "setSleepTimeLimit", props, uuid });
   }
 
   setSpringDamping({
     props,
-    uuid
+    uuid,
   }: CannonMessageBody<"setSpringDamping">): void {
     this.postMessage({ op: "setSpringDamping", props, uuid });
   }
 
   setSpringRestLength({
     props,
-    uuid
+    uuid,
   }: CannonMessageBody<"setSpringRestLength">): void {
     this.postMessage({ op: "setSpringRestLength", props, uuid });
   }
 
   setSpringStiffness({
     props,
-    uuid
+    uuid,
   }: CannonMessageBody<"setSpringStiffness">): void {
     this.postMessage({ op: "setSpringStiffness", props, uuid });
   }
@@ -527,20 +505,20 @@ export class CannonWorkerAPI extends EventEmitter {
 
   step(props: StepProps): void {
     const {
-      buffers: { positions, quaternions }
+      buffers: { positions, quaternions },
     } = this;
 
     if (!positions.byteLength && !quaternions.byteLength) return;
 
     this.worker?.postMessage({ op: "step", positions, props, quaternions }, [
       positions.buffer,
-      quaternions.buffer
+      quaternions.buffer,
     ]);
   }
 
   subscribe({
     props: { id, target, type },
-    uuid
+    uuid,
   }: CannonMessageBody<"subscribe">): void {
     this.postMessage({ op: "subscribe", props: { id, target, type }, uuid });
   }

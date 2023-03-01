@@ -4,7 +4,7 @@ import type {
   WorkerCollideEndEvent,
   WorkerCollideEvent,
   WorkerFrameMessage,
-  WorkerRayhitEvent
+  WorkerRayhitEvent,
 } from "use-cannon/packages/cannon-worker-api/src";
 // } from "@pmndrs/cannon-worker-api";
 import { CannonWorkerAPI } from "use-cannon/packages/cannon-worker-api/src";
@@ -24,7 +24,6 @@ export type PhysicsProviderProps = CannonWorkerProps & {
   maxSubSteps?: number;
   shouldInvalidate?: boolean;
   stepSize?: number;
-  worker: Worker;
 };
 
 const v = new Vector3();
@@ -78,34 +77,31 @@ export function PhysicsProvider({
   solver = "GS",
   stepSize = 1 / 60,
   tolerance = 0.001,
-  worker: passedWorker
 }: PropsWithChildren<PhysicsProviderProps>): JSX.Element {
   const { invalidate } = useThree();
 
-  const [
-    { bodies, events, refs, scaleOverrides, subscriptions, worker }
-  ] = useState<PhysicsContext>(() => ({
-    bodies: {},
-    events: {},
-    refs: {},
-    scaleOverrides: {},
-    subscriptions: {},
-    worker: new CannonWorkerAPI({
-      allowSleep,
-      axisIndex,
-      broadphase,
-      defaultContactMaterial,
-      frictionGravity,
-      gravity,
-      iterations,
-      quatNormalizeFast,
-      quatNormalizeSkip,
-      size,
-      solver,
-      tolerance,
-      passedWorker,
-    })
-  }));
+  const [{ bodies, events, refs, scaleOverrides, subscriptions, worker }] =
+    useState<PhysicsContext>(() => ({
+      bodies: {},
+      events: {},
+      refs: {},
+      scaleOverrides: {},
+      subscriptions: {},
+      worker: new CannonWorkerAPI({
+        allowSleep,
+        axisIndex,
+        broadphase,
+        defaultContactMaterial,
+        frictionGravity,
+        gravity,
+        iterations,
+        quatNormalizeFast,
+        quatNormalizeSkip,
+        size,
+        solver,
+        tolerance,
+      }),
+    }));
 
   let timeSinceLastCalled = 0;
 
@@ -132,16 +128,16 @@ export function PhysicsProvider({
         contact: {
           bi: refs[bi],
           bj: refs[bj],
-          ...contactRest
+          ...contactRest,
         },
         target: refs[target],
-        ...rest
+        ...rest,
       });
   };
 
   const collideBeginHandler = ({
     bodyA,
-    bodyB
+    bodyB,
   }: WorkerCollideBeginEvent["data"]) => {
     const cbA = events[bodyA]?.collideBegin;
     cbA &&
@@ -149,7 +145,7 @@ export function PhysicsProvider({
         body: refs[bodyB],
         op: "event",
         target: refs[bodyA],
-        type: "collideBegin"
+        type: "collideBegin",
       });
     const cbB = events[bodyB]?.collideBegin;
     cbB &&
@@ -157,13 +153,13 @@ export function PhysicsProvider({
         body: refs[bodyA],
         op: "event",
         target: refs[bodyB],
-        type: "collideBegin"
+        type: "collideBegin",
       });
   };
 
   const collideEndHandler = ({
     bodyA,
-    bodyB
+    bodyB,
   }: WorkerCollideEndEvent["data"]) => {
     const cbA = events[bodyA]?.collideEnd;
     cbA &&
@@ -171,7 +167,7 @@ export function PhysicsProvider({
         body: refs[bodyB],
         op: "event",
         target: refs[bodyA],
-        type: "collideEnd"
+        type: "collideEnd",
       });
     const cbB = events[bodyB]?.collideEnd;
     cbB &&
@@ -179,7 +175,7 @@ export function PhysicsProvider({
         body: refs[bodyA],
         op: "event",
         target: refs[bodyB],
-        type: "collideEnd"
+        type: "collideEnd",
       });
   };
 
@@ -188,7 +184,7 @@ export function PhysicsProvider({
     bodies: uuids = [],
     observations,
     positions,
-    quaternions
+    quaternions,
   }: WorkerFrameMessage["data"]) => {
     for (let i = 0; i < uuids.length; i++) {
       bodies[uuids[i]] = i;
@@ -236,7 +232,7 @@ export function PhysicsProvider({
       cb({
         body: body ? refs[body] : null,
         ray: { uuid, ...rayRest },
-        ...rest
+        ...rest,
       });
   };
 

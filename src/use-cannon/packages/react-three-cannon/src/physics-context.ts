@@ -5,7 +5,7 @@ import type {
   CollideEvent,
   RayhitEvent,
   Refs,
-  Subscriptions
+  Subscriptions,
 } from "use-cannon/packages/cannon-worker-api/src";
 // } from '@pmndrs/cannon-worker-api'
 import { createContext, useContext } from "react";
