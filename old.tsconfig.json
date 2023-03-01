@@ -1,0 +1,14 @@
+{
+  "include": ["./src/**/*"],
+  "compilerOptions": {
+    "strict": true,
+    "esModuleInterop": true,
+    "lib": ["dom", "esnext", "WebWorker"],
+    "jsx": "react-jsx",
+    "downlevelIteration": true,
+    "baseUrl": "src",
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node"
+  }
+}
